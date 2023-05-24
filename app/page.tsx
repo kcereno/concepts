@@ -1,6 +1,7 @@
 'use client';
 import Nav from '@/components/Nav';
 import { ComprehensionLevel } from '@/models/types';
+import Loading from '@/ui/Loading/Loading';
 
 import { FormEvent, useState, useRef } from 'react';
 
@@ -92,9 +93,9 @@ export default function Home() {
               </h1>
             </div>
           </div>
-          <button className="mt-10 btn btn-lg btn-primary">Teach Me</button>
+          <button className="mt-10 t btn btn-lg btn-primary">Teach Me</button>
         </form>
-
+        <Loading />
         {isLoading && <p>Contest is loading</p>}
         {response && <p className="m-10">{response}</p>}
       </main>
