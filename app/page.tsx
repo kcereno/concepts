@@ -1,27 +1,24 @@
 'use client';
-import Image from 'next/image';
-import { FormEvent, useState } from 'react';
+import Nav from '@/components/Nav';
+import { ComprehensionLevel } from '@/models/types';
+
+import { FormEvent, useState, useRef } from 'react';
 
 export default function Home() {
-  type ComprehensionLevel =
-    | 'Elementary School'
-    | 'Middle School'
-    | 'High School'
-    | 'College';
+  const [topic, setTopic] = useState<string>('dinosaurs');
+  const [comprehensionLevel, setComprehensionLevel] =
+    useState<ComprehensionLevel>('elementary school');
+  const [response, setResponse] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const topicInputRef = useRef();
 
   const comprehensionLevels: ComprehensionLevel[] = [
-    'Elementary School',
-    'Middle School',
-    'High School',
-    'College',
+    'elementary school',
+    'middle school',
+    'high school',
+    'college',
   ];
-
-  // console.log(process.env.OPENAI_API_KEY);
-  const [topic, setTopic] = useState<string>('Dinosaurs');
-  const [comprehensionLevel, setComprehensionLevel] =
-    useState<ComprehensionLevel>('Elementary School');
-
-  const [response, setResponse] = useState<string | null>(null);
 
   const handleInputChange = (e: FormEvent<HTMLInputElement>) => {
     setTopic(e.currentTarget.value);
@@ -50,6 +47,7 @@ export default function Home() {
     };
 
     try {
+      setIsLoading(true);
       const response = await fetch(url, options);
       console.log('handleSubmit ~ response:', response);
 
@@ -57,50 +55,49 @@ export default function Home() {
       console.log('handleSubmit ~ data:', data);
 
       setResponse(data);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <main className="">
-      <h1 className="mt-10 text-3xl text-center ">The Explanator</h1>
-      <p className="text-center">By KC</p>
-      <form
-        className="flex flex-col items-center justify-center gap-4 mt-10"
-        onSubmit={handleSubmit}
-      >
-        <div className="">
-          <label htmlFor="topic">Topic: </label>
-          <input
-            className="text-black"
-            onChange={handleInputChange}
-            type="text"
-            name="topic"
-            id="topic"
-            value={topic}
-          />
-        </div>
-        <div className="">
-          <label htmlFor="comprehensionLevel">Comprehension Level: </label>
-          <select
-            onChange={handleSelectChange}
-            className="text-black"
-          >
-            {comprehensionLevels.map((level) => (
-              <option key={level}>{level}</option>
-            ))}
-          </select>
-        </div>
+    <>
+      <Nav />
+      <main className="bg-base-100">
+        <form className="p-10 text-5xl">
+          <div>
+            <h1>
+              I want to learn about
+              <span>
+                <input
+                  type="text"
+                  value={topic}
+                  className="text-5xl text-yellow-400 input input-ghost"
+                  // ref={topicInputRef}
+                  onChange={handleInputChange}
+                />
+              </span>
+            </h1>
+            <div className="mt-4">
+              <h1>
+                Explain to to me like I&apos;m in
+                <span>
+                  <select className="w-auto text-5xl text-teal-500 select-ghost select select-lg">
+                    {comprehensionLevels.map((level) => (
+                      <option key={level}>{level}</option>
+                    ))}
+                  </select>
+                </span>
+              </h1>
+            </div>
+          </div>
+          <button className="mt-10 btn btn-lg btn-primary">Teach Me</button>
+        </form>
 
-        <button
-          className="p-2 bg-green-500 rounded-sm "
-          type="submit"
-        >
-          Submit
-        </button>
-      </form>
-      {response && <p className="m-10">{response}</p>}
-    </main>
+        {isLoading && <p>Contest is loading</p>}
+        {response && <p className="m-10">{response}</p>}
+      </main>
+    </>
   );
 }
